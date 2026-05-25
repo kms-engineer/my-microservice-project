@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-app
+  namespace: django-app
+  labels:
+    app: django
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      containers:
+        - name: django
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.us-west-2.amazonaws.com/lesson-6-ecr:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: django-config
+            - secretRef:
+                name: django-secret
+          command: ["sh", "-c"]
+          args:
+            - |
+              python manage.py migrate --noinput &&
+              gunicorn django_app.wsgi:application --bind 0.0.0.0:8000 --workers 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+  namespace: django-app
+spec:
+  selector:
+    app: django
+  ports:
+    - port: 80
+      targetPort: 8000
+  type: LoadBalancer
