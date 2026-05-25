@@ -1,17 +1,37 @@
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
 .pytest_cache/
 .venv/
 venv/
 env/
+
+# Django
 db.sqlite3
 staticfiles/
 media/
-.DS_Store
-.env
+*.log
 
 # Terraform
 .terraform/
 *.tfstate
 *.tfstate.backup
+*.tfstate.*.backup
+.terraform.lock.hcl
 *.tfplan
+crash.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
