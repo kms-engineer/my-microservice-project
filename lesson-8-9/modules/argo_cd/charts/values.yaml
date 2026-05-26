@@ -2,7 +2,7 @@ applications:
   - name: django-app
     repoURL: "https://github.com/kms-engineer/my-microservice-project.git"
     targetRevision: lesson-8-9
-    chartPath: charts/django-app
+    chartPath: lesson-8-9/charts/django-app
     namespace: django
     syncPolicy: automated
 
