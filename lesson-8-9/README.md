@@ -46,14 +46,21 @@ Jenkins встановлено через Helm і автоматично нал�
 4. Оновлює `image.tag` у `charts/django-app/values.yaml`
 5. Пушить оновлений values.yaml назад у Git
 
-### 2. Argo CD (CD)
+### 2. Django Application
+
+Django-застосунок розгортається автоматично через Argo CD:
+- **PostgreSQL** — розгортається автоматично разом із Django в одному namespace (шаблон `postgres.yaml` у Helm-чарті)
+- **Міграції БД** — виконуються автоматично при старті контейнера (`python manage.py migrate --noinput`) перед запуском Gunicorn
+- **Helm chart** — містить усі необхідні ресурси: Deployment, Service, ConfigMap, HPA, PostgreSQL
+
+### 3. Argo CD (CD)
 
 Argo CD встановлено через Helm і автоматично створює Application:
 - **Application** `django-app` — стежить за `charts/django-app/` у Git
 - **Auto Sync** — при зміні values.yaml (нового тегу) автоматично деплоїть
 - **Self Heal** + **Prune** — відновлює стан та прибирає зайві ресурси
 
-### 3. Argo CD Application Template
+### 4. Argo CD Application Template
 
 ```yaml
 spec:
@@ -141,18 +148,27 @@ spec:
    - Зачекайте, поки збірка завершиться
    - Seed-job автоматично створить pipeline **`goit-django-docker`**
 
-4. **Запустіть CI pipeline:**
+4. **⚠️ Налаштуйте GitHub PAT (обов'язково перед першим запуском CI!):**
+   - У `values.yaml` використовується placeholder-токен для безпеки (щоб не зберігати секрет у Git)
+   - Перейдіть: **Manage Jenkins** → **Credentials** → **System** → **Global credentials**
+   - Знайдіть credential з ID **`github-token`** та натисніть іконку редагування
+   - У полі **Password** вставте ваш реальний GitHub Personal Access Token (PAT)
+     - Створити PAT: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token
+     - Необхідний scope: **`repo`** (повний доступ до репозиторіїв)
+   - Натисніть **Save**
+
+5. **Запустіть CI pipeline:**
    - Поверніться на головну сторінку Jenkins
    - Відкрийте новостворений job **`goit-django-docker`**
    - Натисніть **Build Now**
    - Pipeline виконає:
      - Клонування Git-репозиторію
-     - Docker-образу через Kaniko
+     - Збірку Docker-образу через Kaniko
      - Push образу до Amazon ECR
      - Оновлення `image.tag` у `charts/django-app/values.yaml`
      - Push оновленого values.yaml назад у Git
 
-5. **Перевірте логи збірки:**
+6. **Перевірте логи збірки:**
    - Натисніть на номер збірки (наприклад, `#1`) у Build History
    - Натисніть **Console Output**
    - Переконайтеся, що всі етапи пройшли без помилок
