@@ -16,6 +16,11 @@ spec:
         - name: django
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              python manage.py migrate --noinput &&
+              gunicorn django_app.wsgi:application --bind 0.0.0.0:{{ .Values.service.port }} --workers 3
           ports:
             - containerPort: {{ .Values.service.port }}
           envFrom:
