@@ -43,6 +43,10 @@ controller:
 
   JCasC:
     configScripts:
+      security: |
+        security:
+          globalJobDslSecurityConfiguration:
+            useScriptSecurity: false
       credentials: |
         credentials:
           system:
