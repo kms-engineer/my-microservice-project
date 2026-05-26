@@ -7,6 +7,10 @@ metadata:
     {{- if .Values.ingress.className }}
     kubernetes.io/ingress.class: {{ .Values.ingress.className }}
     {{- end }}
+    {{- if .Values.ingress.tls }}
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    {{- end }}
 spec:
   {{- if .Values.ingress.tls }}
   tls:
