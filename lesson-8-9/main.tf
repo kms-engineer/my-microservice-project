@@ -92,7 +92,7 @@ module "argo_cd" {
   cluster_name       = module.eks.eks_cluster_name
   git_repo_url       = "https://github.com/kms-engineer/my-microservice-project.git"
   git_target_revision = "lesson-8-9"
-  app_chart_path     = "charts/django-app"
+  app_chart_path     = "lesson-8-9/charts/django-app"
   app_namespace      = "django"
 
   providers = {

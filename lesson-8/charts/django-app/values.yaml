@@ -1,6 +1,6 @@
 # Docker image configuration
 image:
-  repository: <AWS_ACCOUNT_ID>.dkr.ecr.us-west-2.amazonaws.com/lesson-7-ecr
+  repository: REDACTED-AWS-ACCOUNT.dkr.ecr.us-west-2.amazonaws.com/lesson-7-ecr
   tag: latest
   pullPolicy: IfNotPresent
 

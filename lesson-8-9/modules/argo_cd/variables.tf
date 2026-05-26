@@ -18,7 +18,7 @@ variable "git_target_revision" {
 variable "app_chart_path" {
   description = "Шлях до Helm-чарта всередині Git-репозиторію"
   type        = string
-  default     = "charts/django-app"
+  default     = "lesson-8-9/charts/django-app"
 }
 
 variable "app_namespace" {
