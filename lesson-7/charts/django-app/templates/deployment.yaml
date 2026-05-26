@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-django
 spec:
-  replicas: 1
+  replicas: {{ .Values.autoscaling.minReplicas }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-django
@@ -21,3 +21,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
