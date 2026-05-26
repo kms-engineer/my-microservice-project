@@ -44,6 +44,7 @@ spec:
                         withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
                             sh """
                                 sed -i 's/tag: .*/tag: "'${imageTag}'"/' lesson-8-9/charts/django-app/values.yaml
+                                git config --global --add safe.directory '*'
                                 git config user.name "Jenkins CI"
                                 git config user.email "jenkins@ci.com"
                                 git add lesson-8-9/charts/django-app/values.yaml
