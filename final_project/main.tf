@@ -70,9 +70,9 @@ module "eks" {
   cluster_name  = "final-project-eks"
   subnet_ids    = module.vpc.public_subnets
   instance_type = "t3.small" # Free Tier compatible (t3.medium blocked on Free Tier accounts)
-  desired_size  = 3
-  max_size      = 5
-  min_size      = 2
+  desired_size  = 4           # 4 nodes needed: 3 wasn't enough for Prometheus+ArgoCD+Jenkins+Django
+  max_size      = 6
+  min_size      = 3
 }
 
 #-------------RDS / Aurora (universal module from lesson-db-module)-----------------
