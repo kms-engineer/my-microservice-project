@@ -1,0 +1,12 @@
+applications:
+  - name: django-app
+    repoURL: "https://github.com/kms-engineer/my-microservice-project.git"
+    targetRevision: lesson-8-9
+    chartPath: lesson-8-9/charts/django-app
+    namespace: django
+    syncPolicy: automated
+
+repositories:
+  - name: infra-repo
+    url: "https://github.com/kms-engineer/my-microservice-project.git"
+    type: git
