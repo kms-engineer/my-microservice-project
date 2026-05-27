@@ -1,7 +1,7 @@
 # Docker image configuration
 image:
   repository: REDACTED-AWS-ACCOUNT.dkr.ecr.us-west-2.amazonaws.com/lesson-7-ecr
-  tag: "build-6"
+  tag: "build-4"
   pullPolicy: IfNotPresent
 
 # Kubernetes Service configuration
