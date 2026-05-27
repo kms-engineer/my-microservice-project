@@ -84,7 +84,7 @@ module "rds" {
 
   # When use_aurora = true — change engine to "aurora-postgresql" and family to "aurora-postgresql15"
   engine         = var.use_aurora ? "aurora-postgresql" : "postgres"
-  engine_version = var.use_aurora ? "15.4" : "15.7"
+  engine_version = var.use_aurora ? "15.4" : "15.18"
   family         = var.use_aurora ? "aurora-postgresql15" : "postgres15"
   port           = 5432
 
@@ -98,7 +98,7 @@ module "rds" {
   username = "dbadmin"
   password = var.db_password
 
-  backup_retention_period = 7
+  backup_retention_period = 0 # Free Tier allows max 0 days
   deletion_protection     = false
   skip_final_snapshot     = true
 
