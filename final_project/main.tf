@@ -46,8 +46,8 @@ variable "grafana_admin_password" {
 
 module "s3_backend" {
   source      = "./modules/s3-backend"
-  bucket_name = "mykyta-terraform-state-bucket"
-  table_name  = "terraform-locks"
+  bucket_name = "mykyta-final-project-state"
+  table_name  = "final-project-locks"
 }
 
 module "vpc" {
@@ -69,7 +69,7 @@ module "eks" {
   source        = "./modules/eks"
   cluster_name  = "final-project-eks"
   subnet_ids    = module.vpc.public_subnets
-  instance_type = "t3.medium"
+  instance_type = "t3.small" # Free Tier compatible (t3.medium blocked on Free Tier accounts)
   desired_size  = 3
   max_size      = 5
   min_size      = 2
@@ -119,27 +119,30 @@ module "rds" {
 }
 
 #-------------Kubernetes providers-----------------
-
-data "aws_eks_cluster" "eks" {
-  name = module.eks.eks_cluster_name
-}
-
-data "aws_eks_cluster_auth" "eks" {
-  name = module.eks.eks_cluster_name
-}
+# Using exec-based auth instead of data sources so that providers are
+# configured from module.eks outputs (resolved AFTER the cluster is created),
+# not from data sources that fail on the first plan.
 
 provider "helm" {
   kubernetes {
-    host                   = data.aws_eks_cluster.eks.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.eks.token
+    host                   = module.eks.eks_cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.eks_cluster_certificate_authority)
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", module.eks.eks_cluster_name, "--region", "us-west-2"]
+    }
   }
 }
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.eks.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.eks.token
+  host                   = module.eks.eks_cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.eks_cluster_certificate_authority)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.eks_cluster_name, "--region", "us-west-2"]
+  }
 }
 
 #-------------CI/CD-----------------
