@@ -21,7 +21,8 @@ spec:
 
     environment {
         ECR_REGISTRY = "REDACTED-AWS-ACCOUNT.dkr.ecr.us-west-2.amazonaws.com"
-        IMAGE_NAME   = "lesson-7-ecr"
+        IMAGE_NAME   = "final-project-ecr"
+        GIT_BRANCH   = "final_project"
     }
 
     stages {
@@ -30,7 +31,7 @@ spec:
                 container('kaniko') {
                     script {
                         def imageTag = "build-${env.BUILD_NUMBER}"
-                        sh "/kaniko/executor --context=dir://lesson-6 --dockerfile=lesson-6/Dockerfile --destination=${ECR_REGISTRY}/${IMAGE_NAME}:${imageTag} --cache=true"
+                        sh "/kaniko/executor --context=dir://final_project/Django --dockerfile=final_project/Django/Dockerfile --destination=${ECR_REGISTRY}/${IMAGE_NAME}:${imageTag} --cache=true"
                     }
                 }
             }
@@ -43,13 +44,13 @@ spec:
                         def imageTag = "build-${env.BUILD_NUMBER}"
                         withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
                             sh """
-                                sed -i 's/tag: .*/tag: "'${imageTag}'"/' lesson-8-9/charts/django-app/values.yaml
+                                sed -i 's/tag: .*/tag: "'${imageTag}'"/' final_project/charts/django-app/values.yaml
                                 git config --global --add safe.directory '*'
                                 git config user.name "Jenkins CI"
                                 git config user.email "jenkins@ci.com"
-                                git add lesson-8-9/charts/django-app/values.yaml
+                                git add final_project/charts/django-app/values.yaml
                                 git commit -m "chore: update image tag to ${imageTag} [skip ci]" || echo "No changes to commit"
-                                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/kms-engineer/my-microservice-project.git HEAD:lesson-8-9
+                                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/kms-engineer/my-microservice-project.git HEAD:${GIT_BRANCH}
                             """
                         }
                     }

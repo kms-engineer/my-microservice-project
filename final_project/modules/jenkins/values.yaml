@@ -69,7 +69,7 @@ controller:
                       url('https://github.com/kms-engineer/my-microservice-project.git')
                       credentials('github-token')
                     }
-                    branches('*/lesson-8-9')
+                    branches('*/final_project')
                   }
                 }
                 steps {
@@ -84,9 +84,10 @@ controller:
                                   url("https://github.com/kms-engineer/my-microservice-project.git")
                                   credentials("github-token")
                                 }
-                                branches("*/lesson-8-9")
+                                branches("*/final_project")
                               }
                             }
+                            scriptPath("final_project/Django/Jenkinsfile")
                           }
                         }
                       }
