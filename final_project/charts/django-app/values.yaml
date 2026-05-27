@@ -1,0 +1,37 @@
+# Docker image configuration
+image:
+  repository: REDACTED-AWS-ACCOUNT.dkr.ecr.us-west-2.amazonaws.com/lesson-7-ecr
+  tag: "build-6"
+  pullPolicy: IfNotPresent
+
+# Kubernetes Service configuration
+service:
+  type: LoadBalancer
+  port: 8000
+
+# Horizontal Pod Autoscaler configuration
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+# Ingress configuration (bonus — requires own domain)
+ingress:
+  enabled: false
+  className: nginx
+  host: django.example.com
+  path: /
+  pathType: Prefix
+  tls: false
+
+# Environment variables passed to Django via ConfigMap
+config:
+  DJANGO_SECRET_KEY: "change-me-in-production"
+  DJANGO_DEBUG: "0"
+  DJANGO_ALLOWED_HOSTS: "*"
+  POSTGRES_DB: django_db
+  POSTGRES_USER: django_user
+  POSTGRES_PASSWORD: django_password
+  POSTGRES_HOST: postgres-service
+  POSTGRES_PORT: "5432"

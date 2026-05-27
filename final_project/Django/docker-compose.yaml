@@ -1,0 +1,45 @@
+version: "3.9"
+
+# Local development for the Django app from the final project.
+# This is NOT used in production — production runs in EKS via the
+# charts/django-app Helm chart deployed by Argo CD.
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: dbadmin
+      POSTGRES_PASSWORD: SuperSecret123!
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbadmin -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DJANGO_DEBUG: "True"
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: appdb
+      POSTGRES_USER: dbadmin
+      POSTGRES_PASSWORD: SuperSecret123!
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn djangoproject.wsgi:application --bind 0.0.0.0:8000"
+
+volumes:
+  pgdata:
